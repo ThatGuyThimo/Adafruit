@@ -1,5 +1,5 @@
 let on = false;
-let speed = 100;
+let speed = 10;
 
 let timer = 0;
 let index = 0;
@@ -11,6 +11,13 @@ let indexFrom = 0;
 let indexTo = 9;
 let colorIndex = 0;
 let loopColorIndex = 0;
+
+
+let led_loop: number;
+let loaded = false;
+let ran = false
+
+
 
 function run_loop() {
 
@@ -86,33 +93,41 @@ function run_loop() {
 }
 
 function startInterval() {
-
     on = true;
 
     timer = 0;
     index = 0;
     pixel = 0;
 
-    let break_loop = false
-
-    let led_loop = setInterval(function () {
-        if (!on) {
-            break_loop = true
-        }
-        if (!break_loop) {
-            run_loop()
-        } else {
-            clearInterval(led_loop)
-        }
-
+    led_loop = setInterval(function () {
+        run_loop()
     }, speed);
-
 }
 
 input.buttonA.onEvent(ButtonEvent.Click, function () {
     if (on) {
-        on = false
+        clearInterval(led_loop)
+        on = false;
     } else {
         startInterval()
     }
-})  
+})
+
+
+loops.forever(function () {
+    let force = pins.A2.analogRead();
+    console.log(force)
+    if (!on && force > 800) {
+        loaded = true
+    }
+    else if (on && loaded && force > 200) {
+        clearInterval(led_loop)
+        ran = false
+        loaded = false
+
+    }
+    if (loaded && force < 50 && !ran) {
+        ran = true
+        startInterval()
+    }
+})
