@@ -8,7 +8,7 @@ let colorArray: number[] = [Colors.Green, Colors.Blue, Colors.Orange, Colors.Red
 let paused = false
 
 loops.forever(function () {
-    if (paused === false) {
+    if (!paused) {
         pins.A3.digitalWrite(false)
         control.waitMicros(2)
         pins.A3.digitalWrite(true)
